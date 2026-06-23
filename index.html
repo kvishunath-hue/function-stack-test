@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Function Stack Test — Ni · Fe · Se · Ti</title>
+<meta name="description" content="A forced-choice test that measures the stacking of four Jungian cognitive functions — Ni, Fe, Se, Ti — and tells you whether you lean INFJ, ENFJ, ESTP or ISTP, with guidance." />
+<style>
+  :root{
+    --bg:#0e1020; --card:#171a2e; --card2:#1f2340; --ink:#eef0ff; --muted:#a4a8c8;
+    --line:#2c3056;
+    --ni:#9b7bff; --fe:#ff7eb6; --se:#ffae5c; --ti:#4fd6c9;
+    --shadow:0 20px 60px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 700px at 70% -10%, #20244a 0%, var(--bg) 55%);
+    color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55; min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px; margin:0 auto; padding:32px 20px 80px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:20px; padding:30px; box-shadow:var(--shadow)}
+  h1{font-size:clamp(26px,5vw,40px); line-height:1.1; margin:0 0 6px; letter-spacing:-.02em}
+  h2{font-size:22px; margin:0 0 10px; letter-spacing:-.01em}
+  .lede{color:var(--muted); font-size:17px}
+  .chips{display:flex; gap:8px; flex-wrap:wrap; margin:18px 0 6px}
+  .chip{font-size:13px; font-weight:600; padding:6px 12px; border-radius:999px; border:1px solid var(--line)}
+  .chip.ni{color:var(--ni)} .chip.fe{color:var(--fe)} .chip.se{color:var(--se)} .chip.ti{color:var(--ti)}
+  .meta{display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); font-size:14px; margin-top:18px}
+  button{font-family:inherit; cursor:pointer; border:none}
+  .btn{
+    display:inline-block; margin-top:24px; background:linear-gradient(120deg,var(--ni),var(--fe));
+    color:#0e1020; font-weight:800; font-size:17px; padding:15px 28px; border-radius:14px; transition:transform .12s ease, filter .12s ease;
+  }
+  .btn:hover{transform:translateY(-2px); filter:brightness(1.06)}
+  .btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--line); font-weight:600}
+  ul.clean{margin:10px 0 0; padding-left:20px; color:var(--muted)}
+  ul.clean li{margin:6px 0}
+  /* progress */
+  .progress{height:8px; background:var(--card2); border-radius:999px; overflow:hidden; margin-bottom:6px}
+  .bar{height:100%; width:0; background:linear-gradient(90deg,var(--ni),var(--fe),var(--se),var(--ti)); transition:width .35s ease}
+  .pcount{color:var(--muted); font-size:13px; display:flex; justify-content:space-between; margin-bottom:22px}
+  .qtext{font-size:21px; font-weight:700; margin:6px 0 20px; letter-spacing:-.01em}
+  .opt{
+    display:block; width:100%; text-align:left; background:var(--card2); color:var(--ink);
+    border:1px solid var(--line); border-radius:14px; padding:16px 18px; font-size:16px; margin-bottom:12px;
+    transition:transform .1s ease, border-color .12s ease, background .12s ease;
+  }
+  .opt:hover{transform:translateY(-2px); border-color:#4a4f86; background:#23284a}
+  .nav{display:flex; justify-content:space-between; align-items:center; margin-top:8px}
+  .back{background:transparent; color:var(--muted); font-size:15px; padding:8px 4px}
+  .back:hover{color:var(--ink)}
+  /* results */
+  .typebadge{display:inline-flex; align-items:center; gap:10px; font-size:14px; color:var(--muted); margin-bottom:8px}
+  .stack{display:flex; flex-direction:column; gap:14px; margin:22px 0}
+  .frow{display:grid; grid-template-columns:54px 1fr; gap:14px; align-items:center}
+  .fcode{font-weight:800; font-size:18px; text-align:center; padding:10px 0; border-radius:12px; background:var(--card2)}
+  .fcode.ni{color:var(--ni)} .fcode.fe{color:var(--fe)} .fcode.se{color:var(--se)} .fcode.ti{color:var(--ti)}
+  .fmeter{position:relative}
+  .ftop{display:flex; justify-content:space-between; font-size:14px; margin-bottom:5px}
+  .ftop .role{color:var(--muted)}
+  .track{height:12px; background:var(--card2); border-radius:999px; overflow:hidden}
+  .fill{height:100%; border-radius:999px; transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .fill.ni{background:var(--ni)} .fill.fe{background:var(--fe)} .fill.se{background:var(--se)} .fill.ti{background:var(--ti)}
+  .section{margin-top:26px; padding-top:24px; border-top:1px solid var(--line)}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+  @media(max-width:560px){ .grid2{grid-template-columns:1fr} .card{padding:22px} }
+  .panel{background:var(--card2); border:1px solid var(--line); border-radius:14px; padding:16px}
+  .panel h3{margin:0 0 8px; font-size:16px}
+  .fdesc{display:flex; gap:12px; padding:12px 0; border-bottom:1px dashed var(--line)}
+  .fdesc:last-child{border-bottom:none}
+  .dot{width:12px; height:12px; border-radius:50%; margin-top:6px; flex:0 0 auto}
+  .dot.ni{background:var(--ni)} .dot.fe{background:var(--fe)} .dot.se{background:var(--se)} .dot.ti{background:var(--ti)}
+  .note{background:rgba(255,174,92,.08); border:1px solid rgba(255,174,92,.3); color:#ffd9a8; border-radius:12px; padding:12px 14px; font-size:14px; margin-top:18px}
+  .conf{font-size:14px; color:var(--muted); margin-top:4px}
+  .foot{color:var(--muted); font-size:13px; margin-top:30px; text-align:center; line-height:1.6}
+  .hidden{display:none}
+  a{color:var(--ti)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- INTRO -->
+  <section id="intro" class="card">
+    <h1>The Function&nbsp;Stack Test</h1>
+    <p class="lede">A forced-choice test that measures how four Jungian cognitive functions are <strong>stacked</strong> in your mind — and what that ordering says about how you think, decide, and grow.</p>
+    <div class="chips">
+      <span class="chip ni">Ni · Introverted Intuition</span>
+      <span class="chip fe">Fe · Extraverted Feeling</span>
+      <span class="chip se">Se · Extraverted Sensing</span>
+      <span class="chip ti">Ti · Introverted Thinking</span>
+    </div>
+    <p class="lede" style="margin-top:14px">Each question shows four ways of responding to the same situation. Just pick the one that feels <em>most like you</em> — not the one that sounds best. There are no right answers, and the order of options is shuffled so you can't game it.</p>
+    <div class="meta">
+      <span>⏱️ ~5 minutes</span>
+      <span>📋 28 questions</span>
+      <span>🔒 100% private — nothing leaves your browser</span>
+    </div>
+    <button class="btn" onclick="start()">Start the test →</button>
+    <p class="foot" style="text-align:left; margin-top:24px">These four functions, depending on their order, describe four type families: <strong>INFJ, ENFJ, ESTP and ISTP</strong>. This is a reflective tool grounded in Jungian / MBTI® function theory, not a clinical instrument.</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="card hidden">
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    <div class="pcount"><span id="qnum">Question 1 of 28</span><span id="ppct">0%</span></div>
+    <div id="qtext" class="qtext"></div>
+    <div id="opts"></div>
+    <div class="nav"><button class="back" id="backBtn" onclick="back()">← Back</button><span></span></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="result" class="card hidden"></section>
+
+  <p class="foot">Built as a reflective tool · function theory after C. G. Jung &amp; the MBTI® tradition · MBTI is a trademark of its respective owner and this test is not affiliated with or endorsed by it.</p>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const FN = {
+  Ni:{name:"Introverted Intuition", cls:"ni", color:"var(--ni)",
+      blurb:"Synthesises patterns over time into a single, often hard-to-explain insight about where things are heading. Future-focused, symbolic, visionary."},
+  Fe:{name:"Extraverted Feeling", cls:"fe", color:"var(--fe)",
+      blurb:"Reads and tends the emotional climate around you, seeking harmony, connection and others' wellbeing. Warm, attuned, expressive."},
+  Se:{name:"Extraverted Sensing", cls:"se", color:"var(--se)",
+      blurb:"Engages fully with the concrete present — sights, action, opportunity. Spontaneous, grounded, responsive to what's real right now."},
+  Ti:{name:"Introverted Thinking", cls:"ti", color:"var(--ti)",
+      blurb:"Builds precise internal logical frameworks; values consistency, accuracy and understanding how things truly work. Analytical, independent."}
+};
+
+// Each type is uniquely fixed by its DOMINANT function (within this set of four functions).
+const TYPES = {
+  Ni:{code:"INFJ", title:"The Visionary Guide", stack:["Ni","Fe","Ti","Se"],
+    overview:"Led by Introverted Intuition and supported by Extraverted Feeling, you tend to live a step ahead — sensing where people and situations are heading, and caring deeply about getting them there well. You pair long-range vision with genuine warmth and a quiet, private depth.",
+    strengths:["Foresight — you see implications and outcomes early","Deep empathy and an instinct for what people need","Insight that connects scattered dots into one meaning","Integrity and a strong inner compass","The ability to inspire and gently guide others"],
+    growth:["Trust the body and the present moment (your inferior Se) — don't live entirely in the future","Avoid absorbing others' emotions until you lose your own","Let some visions stay imperfect instead of endlessly refining them","Name your own needs out loud rather than only sensing everyone else's"],
+    tips:["Turn each big vision into one concrete next step","Protect real alone-time to recharge","Move your body and do something physical daily","Practise separating “my feeling” from “the room's feeling”"]},
+  Fe:{code:"ENFJ", title:"The Catalyst", stack:["Fe","Ni","Se","Ti"],
+    overview:"Extraverted Feeling leads, backed by Introverted Intuition — so you read people and futures at the same time, and you naturally rally others toward something better. Charismatic, perceptive and growth-oriented, you turn warmth into momentum.",
+    strengths:["Effortless connection and rapport with people","The drive and charisma to motivate a group","Vision for what people could become","Organising collective energy toward a goal","Warmth that makes others feel seen"],
+    growth:["Tend to your own inner truth and logic (your inferior Ti), not just the group's harmony","Tolerate disagreement without rushing to smooth it over","Watch for over-extending and burning out for others","Let cool analysis double-check your people-pleasing instincts"],
+    tips:["Schedule honest self-check-ins, not just check-ins on others","Allow conflict to surface — it's often necessary","Build in regular solitude to hear your own voice","Practise saying “no” without over-explaining"]},
+  Se:{code:"ESTP", title:"The Dynamo", stack:["Se","Ti","Fe","Ni"],
+    overview:"Extraverted Sensing leads with Introverted Thinking close behind — you're fully in the moment, reading the real situation as it is and acting on it decisively with sharp, practical logic. Bold, adaptable and effective, you make things happen.",
+    strengths:["Total presence and awareness of what's actually happening","Courage to act when others hesitate","Fast, practical problem-solving on the fly","Realism — you deal with the world as it is","Magnetic energy in action"],
+    growth:["Develop foresight (your inferior Ni) — pause to ask where this leads","Attend to people's feelings (Fe), not just the facts of the moment","Resist chasing stimulation for its own sake","Sit with long-term plans even when they feel abstract"],
+    tips:["Before acting, ask “where does this lead in a month?”","Check the emotional impact of your decisions on others","Channel your energy into mastery, not just novelty","Pick one long-term goal and protect it"]},
+  Ti:{code:"ISTP", title:"The Craftsman", stack:["Ti","Se","Ni","Fe"],
+    overview:"Introverted Thinking leads with Extraverted Sensing — you build precise internal models of how things work and test them hands-on against the real world. Independent, calm and ingenious, you stay cool while you figure things out.",
+    strengths:["Deep logical mastery and clean reasoning","Practical, hands-on skill and troubleshooting","Calm and clear-headed under pressure","Strong autonomy and self-reliance","An eye for how systems actually work"],
+    growth:["Open up emotionally (your inferior Fe) — share what you feel and value","Express appreciation to the people who matter to you","Verbalise your reasoning so others can follow it","Watch for long-term blind spots; plan a little further ahead"],
+    tips:["Tell people directly what you appreciate about them","Think out loud sometimes instead of solving silently","Invest steadily in a few key relationships","Set a reminder to zoom out and plan ahead"]}
+};
+
+const ROLES = ["Dominant","Auxiliary","Tertiary","Inferior"];
+
+/* 28 forced-choice questions. Each has exactly one option per function. */
+const Q = [
+ {q:"When you walk into a new place, the first thing that grabs you is…", o:{
+   Se:"The sights, sounds and energy of the room right now.",
+   Ni:"A gut sense of how the evening is going to unfold.",
+   Fe:"The mood of the people and whether everyone seems comfortable.",
+   Ti:"How the space is laid out, and why it's arranged that way."}},
+ {q:"You feel most satisfied after a day where you…", o:{
+   Ni:"Connected the dots on something that had puzzled you for ages.",
+   Se:"Did something physical and real — built, moved, played, explored.",
+   Fe:"Helped someone feel genuinely understood and supported.",
+   Ti:"Worked out exactly how a tricky system actually functions."}},
+ {q:"A friend asks for advice. You instinctively…", o:{
+   Fe:"Tune into how they're feeling before saying anything.",
+   Ti:"Break the problem down logically to find the flaw.",
+   Ni:"Tell them where this path likely leads if nothing changes.",
+   Se:"Suggest something concrete they can do right now."}},
+ {q:"The kind of conversation that energises you most is…", o:{
+   Ti:"Debating ideas and pinning down precise definitions.",
+   Fe:"Sharing feelings and deepening a connection.",
+   Ni:"Exploring hidden meanings and future possibilities.",
+   Se:"Swapping stories about real experiences and adventures."}},
+ {q:"When making a decision, you trust…", o:{
+   Ni:"The single insight that quietly clicks into place.",
+   Ti:"A consistent line of reasoning you can defend.",
+   Fe:"The impact it will have on the people involved.",
+   Se:"What the situation in front of you actually calls for."}},
+ {q:"People are most likely to describe you as…", o:{
+   Ni:"Insightful, deep, and a little hard to read.",
+   Fe:"Warm and tuned in to others.",
+   Se:"Lively, grounded, and up for anything.",
+   Ti:"Precise, logical, and independent-minded."}},
+ {q:"You feel most alive when…", o:{
+   Se:"You're fully immersed in the moment, senses wide open.",
+   Ni:"A vision of what could be suddenly crystallises.",
+   Fe:"You're in sync with people you care about.",
+   Ti:"A complex problem finally resolves into a clean model."}},
+ {q:"At work or school, you're the person who…", o:{
+   Ti:"Spots the logical inconsistency everyone else missed.",
+   Fe:"Keeps the team connected and morale up.",
+   Ni:"Sees the long-term implication before others do.",
+   Se:"Jumps in and gets the real, tangible work done."}},
+ {q:"Planning a trip, you focus on…", o:{
+   Se:"The experiences — food, places, things to actually do.",
+   Ni:"An overall theme or meaning you want the trip to have.",
+   Ti:"The most efficient, well-reasoned itinerary.",
+   Fe:"Making sure everyone coming will enjoy it."}},
+ {q:"When you learn something new, you want to…", o:{
+   Ti:"Understand the underlying principle, not just the steps.",
+   Se:"Try it hands-on, immediately.",
+   Ni:"See how it connects to the bigger picture.",
+   Fe:"Learn it with, or for, other people."}},
+ {q:"Your inner world is mostly…", o:{
+   Ni:"Images, symbols, and a sense of where things are heading.",
+   Ti:"Frameworks, categories, and logical maps.",
+   Fe:"A radar for the emotional currents around you.",
+   Se:"Vivid awareness of the here and now."}},
+ {q:"Others come to you when they need…", o:{
+   Fe:"Emotional support and to feel heard.",
+   Ti:"A clear, unbiased analysis.",
+   Ni:"A read on what something really means, or where it's going.",
+   Se:"Someone to act decisively in the moment."}},
+ {q:"You get frustrated when…", o:{
+   Ti:"People accept sloppy, inconsistent reasoning.",
+   Fe:"There's tension in the air and no one will address it.",
+   Se:"You're stuck talking when you could be doing.",
+   Ni:"People can't see a pattern that's obvious to you."}},
+ {q:"Your ideal weekend involves…", o:{
+   Se:"Activity, novelty, movement, real-world fun.",
+   Ni:"Quiet space to think and let ideas settle.",
+   Fe:"Quality time with people who matter to you.",
+   Ti:"Diving deep into a topic or project that fascinates you."}},
+ {q:"When you tell a story, you emphasise…", o:{
+   Se:"The vivid details of what actually happened.",
+   Fe:"How everyone felt and what it meant to them.",
+   Ni:"The deeper significance, or where it all led.",
+   Ti:"The logic of how one thing caused the next."}},
+ {q:"You most trust people who are…", o:{
+   Ti:"Logically consistent and honest about what they don't know.",
+   Fe:"Kind, considerate, and emotionally genuine.",
+   Se:"Real, present, and able to walk their talk.",
+   Ni:"Perceptive about what lies beneath the surface."}},
+ {q:"Faced with a sudden change of plans, you…", o:{
+   Se:"Adapt on the fly — it's kind of exciting.",
+   Ni:"Quickly sense what the change really means.",
+   Ti:"Reassess the logic and rebuild the plan.",
+   Fe:"Check how everyone is handling it."}},
+ {q:"The compliment that means the most to you is…", o:{
+   Ni:"“You saw that coming before anyone else.”",
+   Ti:"“Your reasoning was airtight.”",
+   Fe:"“You made me feel truly understood.”",
+   Se:"“You're so good at just going for it.”"}},
+ {q:"You naturally pay attention to…", o:{
+   Fe:"Shifts in people's tone and mood.",
+   Se:"Concrete changes in your physical surroundings.",
+   Ni:"Recurring patterns that hint at what's next.",
+   Ti:"Whether things are internally consistent."}},
+ {q:"When you're at your best, you…", o:{
+   Ni:"Translate a murky hunch into a clear vision.",
+   Se:"Respond perfectly to exactly what the moment needs.",
+   Fe:"Bring out the best feelings in a group.",
+   Ti:"Cut through confusion with clean logic."}},
+ {q:"In your view, rules and systems should be…", o:{
+   Ti:"Logically sound — or else questioned and revised.",
+   Fe:"In service of people's wellbeing.",
+   Se:"Practical and useful right now.",
+   Ni:"Aligned with a longer-term vision."}},
+ {q:"If you had to choose, you'd rather be…", o:{
+   Ni:"Deeply insightful.",
+   Se:"Fully alive in the moment.",
+   Fe:"Genuinely caring.",
+   Ti:"Impeccably logical."}},
+ {q:"A perfect project lets you…", o:{
+   Ti:"Solve a knotty intellectual puzzle.",
+   Ni:"Bring a long-term vision into focus.",
+   Se:"Work with your hands and see real results.",
+   Fe:"Make a real difference for actual people."}},
+ {q:"When something feels “off”, you…", o:{
+   Ni:"Trust the vague premonition even without proof.",
+   Ti:"Look for the logical flaw causing it.",
+   Fe:"Sense the unspoken tension between people.",
+   Se:"Notice the concrete detail that's out of place."}},
+ {q:"You're most drawn to…", o:{
+   Ni:"Meaning, depth, and the future.",
+   Se:"Sensation, action, and the present.",
+   Fe:"Connection, harmony, and people.",
+   Ti:"Truth, structure, and understanding."}},
+ {q:"In a group, you're usually the one who…", o:{
+   Fe:"Makes sure everyone feels included.",
+   Ti:"Asks the clarifying question no one thought of.",
+   Se:"Gets things moving and keeps the energy up.",
+   Ni:"Quietly foresees how it'll all play out."}},
+ {q:"Your decisions are guided most by…", o:{
+   Ti:"What is logically correct.",
+   Fe:"What is good for the people involved.",
+   Ni:"What aligns with your inner sense of where things lead.",
+   Se:"What actually works in the concrete situation."}},
+ {q:"At the end of the day, you most want to feel that…", o:{
+   Ni:"You understood something true and deep.",
+   Fe:"Your relationships are warm and intact.",
+   Se:"You really lived the day.",
+   Ti:"Your thinking was sound and clear."}}
+];
+
+/* ---------------- ENGINE ---------------- */
+const KEYS=["Ni","Fe","Se","Ti"];
+let idx=0, answers=[]; // answers[i] = function key chosen
+let order=[];          // shuffled option order per question (stored so Back is stable)
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function start(){
+  idx=0; answers=new Array(Q.length).fill(null);
+  order=Q.map(()=>shuffle([...KEYS]));
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  render();
+  window.scrollTo(0,0);
+}
+
+function render(){
+  const q=Q[idx];
+  document.getElementById('qnum').textContent=`Question ${idx+1} of ${Q.length}`;
+  const pct=Math.round((idx)/Q.length*100);
+  document.getElementById('ppct').textContent=`${pct}%`;
+  document.getElementById('bar').style.width=`${pct}%`;
+  document.getElementById('qtext').textContent=q.q;
+  document.getElementById('backBtn').style.visibility = idx===0 ? 'hidden':'visible';
+  const box=document.getElementById('opts'); box.innerHTML='';
+  order[idx].forEach(k=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.textContent=q.o[k];
+    if(answers[idx]===k){ b.style.borderColor=FN[k].color; b.style.background='#23284a'; }
+    b.onclick=()=>choose(k);
+    box.appendChild(b);
+  });
+}
+
+function choose(k){
+  answers[idx]=k;
+  if(idx<Q.length-1){ idx++; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else finish();
+}
+function back(){ if(idx>0){ idx--; render(); window.scrollTo({top:0,behavior:'smooth'}); } }
+
+function finish(){
+  const score={Ni:0,Fe:0,Se:0,Ti:0};
+  answers.forEach(k=>{ if(k) score[k]++; });
+  // deterministic tie-break order (stable, documented): Ni, Fe, Se, Ti
+  const ranked=[...KEYS].sort((a,b)=> score[b]-score[a] || KEYS.indexOf(a)-KEYS.indexOf(b));
+  const dom=ranked[0];
+  const type=TYPES[dom];
+  const total=Q.length;
+  // confidence: gap between dominant and runner-up, scaled
+  const gap=score[ranked[0]]-score[ranked[1]];
+  let conf = gap>=6 ? "Very clear" : gap>=4 ? "Clear" : gap>=2 ? "Moderate" : "Close call";
+  const measuredMatchesCanonical = JSON.stringify(ranked)===JSON.stringify(type.stack);
+
+  const r=document.getElementById('result');
+  r.innerHTML = buildResult({score,ranked,dom,type,total,conf,gap,measuredMatchesCanonical});
+  document.getElementById('quiz').classList.add('hidden');
+  r.classList.remove('hidden');
+  window.scrollTo(0,0);
+  // animate bars
+  requestAnimationFrame(()=>{ document.querySelectorAll('.fill').forEach(el=>{ el.style.width=el.dataset.w; }); });
+}
+
+function buildResult({score,ranked,dom,type,total,conf,gap,measuredMatchesCanonical}){
+  const stackToShow = type.stack; // canonical, theory-consistent stack for the detected type
+  const rows = stackToShow.map((k,i)=>{
+    const pct=Math.round(score[k]/total*100);
+    return `<div class="frow">
+      <div class="fcode ${FN[k].cls}">${k}</div>
+      <div class="fmeter">
+        <div class="ftop"><span><strong>${FN[k].name}</strong></span><span class="role">${ROLES[i]} · ${pct}%</span></div>
+        <div class="track"><div class="fill ${FN[k].cls}" data-w="${pct}%" style="width:0"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const fdescs = stackToShow.map((k,i)=>`
+    <div class="fdesc">
+      <div class="dot ${FN[k].cls}"></div>
+      <div><strong>${k} — ${FN[k].name}</strong> <span style="color:var(--muted)">· ${ROLES[i]}</span><br>
+      <span style="color:var(--muted)">${FN[k].blurb}</span></div>
+    </div>`).join('');
+
+  const measuredOrder = ranked.map(k=>`<strong style="color:${FN[k].color}">${k}</strong>`).join(' › ');
+
+  const mismatchNote = measuredMatchesCanonical ? '' :
+    `<div class="note">Your raw answers ranked the functions as ${measuredOrder}. That's slightly different from the textbook order for ${type.code} — totally normal. The stack below is the theory-consistent ordering for your leading function (${dom}); the percentages are your actual measured scores. A non-textbook ranking often just means a well-developed lower function, or that you're between two nearby types.</div>`;
+
+  return `
+    <div class="typebadge">YOUR LEADING FUNCTION IS <span class="chip ${FN[dom].cls}" style="margin-left:6px">${dom} · ${FN[dom].name}</span></div>
+    <h1>${type.code} <span style="color:var(--muted); font-weight:600; font-size:.6em">— ${type.title}</span></h1>
+    <p class="conf">Confidence: <strong>${conf}</strong> · leading function ${gap} pick(s) ahead of the next.</p>
+    <p class="lede" style="margin-top:14px">${type.overview}</p>
+
+    <div class="section">
+      <h2>Your function stack</h2>
+      <p style="color:var(--muted); margin-top:0">Bars show the share of answers that pointed to each function. The order is the stacking that best fits your leading function.</p>
+      <div class="stack">${rows}</div>
+      ${mismatchNote}
+    </div>
+
+    <div class="section">
+      <h2>What each function does in you</h2>
+      ${fdescs}
+    </div>
+
+    <div class="section">
+      <div class="grid2">
+        <div class="panel">
+          <h3>💪 Your strengths</h3>
+          <ul class="clean">${type.strengths.map(s=>`<li>${s}</li>`).join('')}</ul>
+        </div>
+        <div class="panel">
+          <h3>🌱 Your growth edges</h3>
+          <ul class="clean">${type.growth.map(s=>`<li>${s}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:18px">
+        <h3>🧭 Practical guidance</h3>
+        <ul class="clean">${type.tips.map(s=>`<li>${s}</li>`).join('')}</ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <button class="btn" onclick="start()">Retake the test ↻</button>
+      <button class="btn ghost" onclick="goIntro()" style="margin-left:10px">Back to start</button>
+    </div>
+
+    <p class="foot" style="text-align:left">Remember: a test is a mirror, not a verdict. Read the stack above and notice what rings true and what doesn't — your own honest reflection is the real result.</p>
+  `;
+}
+
+function goIntro(){
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('intro').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
