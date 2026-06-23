@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Function Stack Test — Thinking · Feeling · Sensing · Intuiting</title>
-<meta name="description" content="A test that ranks the four Jungian functions — Thinking, Feeling, Sensing, Intuiting — into your personal stack, adds your introvert/extravert orientation, and names which of Jung's 8 classic types you lead with, plus guidance." />
+<title>Function Stack Test — Thinking · Feeling · Sensing · Intuition</title>
+<meta name="description" content="A test that ranks the four Jungian functions — Thinking, Feeling, Sensing, Intuition — into your personal stack, adds your introvert/extravert orientation, and names which of Jung's 8 classic types you lead with, plus guidance." />
 <style>
   :root{
     --bg:#0e1020; --card:#171a2e; --card2:#1f2340; --ink:#eef0ff; --muted:#a4a8c8;
@@ -90,9 +90,9 @@
       <span class="chip t">Thinking — logic &amp; analysis</span>
       <span class="chip f">Feeling — values &amp; people</span>
       <span class="chip s">Sensing — facts &amp; the present</span>
-      <span class="chip n">Intuiting — patterns &amp; possibility</span>
+      <span class="chip n">Intuition — patterns &amp; possibility</span>
     </div>
-    <p class="lede" style="margin-top:14px">Thinking opposes Feeling, and Sensing opposes Intuiting — so your strongest function and your weakest are always a pair. The test ranks all four into your stack, adds whether you lean <strong>introverted or extraverted</strong>, and names which of Jung's <strong>8 classic types</strong> you lead with — with guidance.</p>
+    <p class="lede" style="margin-top:14px">Thinking opposes Feeling, and Sensing opposes Intuition — so your strongest function and your weakest are always a pair. The test ranks all four into your stack, adds whether you lean <strong>introverted or extraverted</strong>, and names which of Jung's <strong>8 classic types</strong> you lead with — with guidance.</p>
     <div class="meta">
       <span>⏱️ ~5 minutes</span>
       <span>📋 28 questions</span>
@@ -207,11 +207,11 @@ const QF = [
    S:"Realities, facts, and what actually is.",
    T:"Principles, systems, and what's logically true.",
    F:"Values, relationships, and what genuinely matters."}},
- {q:"People would say your strongest gift is…", o:{
-   T:"Clear, objective analysis.",
-   F:"Empathy and understanding people.",
-   S:"Being practical and grounded.",
-   N:"Seeing the bigger picture."}},
+ {q:"People would say you're especially good at…", o:{
+   T:"Cutting to the logical core of a problem.",
+   F:"Sensing what people need.",
+   S:"Getting real things done well.",
+   N:"Spotting where things are heading."}},
  {q:"You make your best decisions by…", o:{
    T:"Stepping back and weighing the logic impartially.",
    F:"Considering what's important to you and to others.",
@@ -231,7 +231,7 @@ const QF = [
    T:"Reasoning that's inconsistent or sloppy.",
    F:"People being treated coldly or unfairly.",
    S:"Impractical ideas with no grounding in reality.",
-   N:"Getting stuck in details and missing the point."}},
+   N:"Vague, literal thinking that misses the deeper possibilities."}},
  {q:"Your attention naturally goes to…", o:{
    N:"What's possible and not yet realised.",
    S:"What's actually present and verifiable.",
@@ -313,9 +313,9 @@ const QA = [
  {q:"Your energy comes mostly from…", o:{
    I:"Your inner world of thoughts and reflections.",
    E:"The outer world of people, activity and events."}},
- {q:"When it comes to people, you…", o:{
-   E:"Find it easy to meet new people and often initiate.",
-   I:"Prefer a few deep connections to many casual ones."}},
+ {q:"You're more energised by…", o:{
+   E:"Meeting and engaging with lots of different people.",
+   I:"A few close connections rather than many casual ones."}},
  {q:"A free evening is best spent…", o:{
    I:"Quietly — alone or with one close person.",
    E:"Out and about, around people and activity."}},
@@ -363,16 +363,25 @@ function render(){
   document.getElementById('qtext').textContent=q.q;
   document.getElementById('backBtn').style.visibility = idx===0 ? 'hidden':'visible';
   const box=document.getElementById('opts'); box.innerHTML='';
+  box.setAttribute('role','radiogroup');
+  box.setAttribute('aria-label', q.q);
+  let selectedBtn=null;
   order[idx].forEach(k=>{
     const b=document.createElement('button');
-    b.className='opt'; b.textContent=q.o[k];
-    if(chosen===k){
+    b.className='opt'; b.type='button';
+    b.setAttribute('role','radio');
+    const isSel = chosen===k;
+    b.setAttribute('aria-checked', isSel?'true':'false');
+    b.textContent = (isSel?'✓  ':'') + q.o[k];
+    if(isSel){
       const col = step.kind==='fn' ? BASE[k].color : 'var(--n)';
-      b.style.borderColor=col; b.style.background='#23284a';
+      b.style.borderColor=col; b.style.borderWidth='2px'; b.style.background='#2a2f55';
+      selectedBtn=b;
     }
     b.onclick=()=>choose(k);
     box.appendChild(b);
   });
+  if(selectedBtn) selectedBtn.focus();
 }
 
 function choose(k){
@@ -411,22 +420,24 @@ function finish(){
   const fconf= fgap>=5?"Very clear": fgap>=3?"Clear": fgap>=1?"Moderate":"Close call";
   const agap=Math.abs(eCount-iCount);
   const aconf= agap>=5?"Very clear": agap>=3?"Clear": agap>=1?"Moderate":"Balanced";
+  const auxTie = score[aux]===score[ter];
+  const orientTie = eCount===iCount;
 
   document.getElementById('result').innerHTML =
-    buildResult({stack,type,domCode,mbti,attitude,eCount,iCount,fconf,aconf,score});
+    buildResult({stack,type,domCode,mbti,attitude,eCount,iCount,fconf,aconf,score,auxTie,orientTie});
   document.getElementById('quiz').classList.add('hidden');
   document.getElementById('result').classList.remove('hidden');
   window.scrollTo(0,0);
   requestAnimationFrame(()=>{ document.querySelectorAll('.fill').forEach(el=>{ el.style.width=el.dataset.w; }); });
 }
 
-function buildResult({stack,type,domCode,mbti,attitude,eCount,iCount,fconf,aconf,score}){
+function buildResult({stack,type,domCode,mbti,attitude,eCount,iCount,fconf,aconf,score,auxTie,orientTie}){
   const attWord = attitude==='I' ? 'Introverted' : 'Extraverted';
   const rows=stack.map(s=>`
     <div class="frow">
       <div class="fcode ${BASE[s.base].cls}">${s.code}</div>
       <div class="fmeter">
-        <div class="ftop"><span><strong>${FN8[s.code].name}</strong></span><span class="role">${ROLES[s.role]} · ${s.pct}%</span></div>
+        <div class="ftop"><span><strong>${FN8[s.code].name}</strong></span><span class="role">${ROLES[s.role]} · ${s.pct}% of answers</span></div>
         <div class="track"><div class="fill ${BASE[s.base].cls}" data-w="${s.pct}%" style="width:0"></div></div>
       </div>
     </div>`).join('');
@@ -445,13 +456,16 @@ function buildResult({stack,type,domCode,mbti,attitude,eCount,iCount,fconf,aconf
       <span class="chip ${BASE[stack[0].base].cls}" style="margin-left:6px">${stack[0].code} · ${FN8[domCode].name}</span></div>
     <h1>${type.title}</h1>
     <p class="conf" style="font-size:16px; color:var(--ink)">${attWord} ${BASE[stack[0].base].name} type</p>
-    <div style="margin:10px 0 4px">${mbtiLine}</div>
+    <div style="margin:10px 0 4px">${mbtiLine}${mbti ? `<div class="conf" style="margin-top:6px">An approximation from your top two functions — the Jungian leading function above is this test's actual result.</div>` : ''}</div>
     <p class="lede" style="margin-top:14px">${type.overview}</p>
-    <p class="conf">Function clarity: <strong>${fconf}</strong> · Orientation: <strong>${attWord}</strong> (${eCount} extraverted / ${iCount} introverted answers — ${aconf}).</p>
+    <p class="conf">Function clarity: <strong>${fconf}</strong> · ${orientTie
+      ? `Orientation: <strong>too close to call</strong> (${eCount} extraverted / ${iCount} introverted — shown as ${attWord} by default)`
+      : `Orientation: <strong>${attWord}</strong> (${eCount} extraverted / ${iCount} introverted answers — ${aconf})`}.</p>
+    ${auxTie ? `<div class="note">Your auxiliary and tertiary functions scored equally here, so the exact type name and “closest MBTI” could reasonably go either way — treat them as two close possibilities.</div>` : ''}
 
     <div class="section">
       <h2>Your function stack</h2>
-      <p style="color:var(--muted); margin-top:0">Bars show the share of answers pointing to each function. Order follows Jung's model: your dominant and inferior are opposites (Thinking↔Feeling, Sensing↔Intuiting), and the attitude alternates inward/outward down the stack.</p>
+      <p style="color:var(--muted); margin-top:0">Bars show each function's <strong>share of your answers</strong> — relative shares that add up to ~100% across the four, not standalone strength scores. Everyone uses all four functions; this is about their <em>order</em>. That order follows Jung's model: your dominant and inferior are opposites (Thinking↔Feeling, Sensing↔Intuition), and the attitude alternates inward/outward down the stack.</p>
       <div class="stack">${rows}</div>
     </div>
 
