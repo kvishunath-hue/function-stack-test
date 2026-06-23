@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Function Stack Test — Thinking · Feeling · Sensing · Intuition</title>
-<meta name="description" content="A test that ranks the four Jungian functions — Thinking, Feeling, Sensing, Intuition — into your personal stack, adds your introvert/extravert orientation, and names which of Jung's 8 classic types you lead with, plus guidance." />
+<title>Function Stack Test — Thinking · Feeling · Intuiting · Sensing</title>
+<meta name="description" content="A Jungian cognitive-function test that scores all eight functions, matches you to the best-fitting of the 16 valid stacks, and gives insightful guidance on your dominant, auxiliary, tertiary and inferior functions plus your loop and grip stress patterns." />
 <style>
   :root{
-    --bg:#0e1020; --card:#171a2e; --card2:#1f2340; --ink:#eef0ff; --muted:#a4a8c8;
-    --line:#2c3056;
-    --t:#4fd6c9; --f:#ff7eb6; --s:#ffae5c; --n:#9b7bff;
+    --bg:#0e1020; --card:#171a2e; --card2:#1f2340; --ink:#eef0ff; --muted:#a4a8c8; --line:#2c3056;
+    --accent:#9b7bff; --accent2:#ff7eb6; --good:#5fd0a0; --warn:#ffae5c; --bad:#ff8a8a;
+    --se:#ff8a5b; --si:#ffce4e; --ne:#5bd1ff; --ni:#9b7bff; --te:#7aa2ff; --ti:#4fd6c9; --fe:#ff7eb6; --fi:#c98bff;
     --shadow:0 20px 60px rgba(0,0,0,.45);
   }
   *{box-sizing:border-box}
@@ -19,493 +19,373 @@
     color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     line-height:1.55; min-height:100vh; -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:780px; margin:0 auto; padding:32px 20px 80px}
-  .card{background:var(--card); border:1px solid var(--line); border-radius:20px; padding:30px; box-shadow:var(--shadow)}
-  h1{font-size:clamp(26px,5vw,40px); line-height:1.1; margin:0 0 6px; letter-spacing:-.02em}
-  h2{font-size:22px; margin:0 0 10px; letter-spacing:-.01em}
-  .lede{color:var(--muted); font-size:17px}
-  .chips{display:flex; gap:8px; flex-wrap:wrap; margin:18px 0 6px}
-  .chip{font-size:13px; font-weight:600; padding:6px 12px; border-radius:999px; border:1px solid var(--line)}
-  .chip.t{color:var(--t)} .chip.f{color:var(--f)} .chip.s{color:var(--s)} .chip.n{color:var(--n)}
-  .meta{display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); font-size:14px; margin-top:18px}
+  .wrap{max-width:820px; margin:0 auto; padding:32px 20px 96px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:20px; padding:26px 28px; box-shadow:var(--shadow); margin:14px 0}
+  h1{font-size:clamp(26px,5vw,38px); line-height:1.12; margin:0 0 6px; letter-spacing:-.02em}
+  h2{font-size:22px; margin:34px 0 12px; letter-spacing:-.01em}
+  .lede{color:var(--muted); font-size:17px; margin:0 0 22px}
+  ul.clean{margin:10px 0 0; padding-left:20px} ul.clean li{margin:7px 0}
+  .muted{color:var(--muted)} .note{color:var(--muted); font-size:14px}
   button{font-family:inherit; cursor:pointer; border:none}
-  .btn{
-    display:inline-block; margin-top:24px; background:linear-gradient(120deg,var(--n),var(--f));
-    color:#0e1020; font-weight:800; font-size:17px; padding:15px 28px; border-radius:14px; transition:transform .12s ease, filter .12s ease;
-  }
+  .btn{display:inline-block; background:linear-gradient(120deg,var(--accent),var(--accent2));
+    color:#0e1020; font-weight:800; font-size:17px; padding:14px 26px; border-radius:14px; transition:transform .12s ease, filter .12s ease;}
   .btn:hover{transform:translateY(-2px); filter:brightness(1.06)}
   .btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--line); font-weight:600}
-  ul.clean{margin:10px 0 0; padding-left:20px; color:var(--muted)}
-  ul.clean li{margin:6px 0}
-  .progress{height:8px; background:var(--card2); border-radius:999px; overflow:hidden; margin-bottom:6px}
-  .bar{height:100%; width:0; background:linear-gradient(90deg,var(--t),var(--f),var(--s),var(--n)); transition:width .35s ease}
-  .pcount{color:var(--muted); font-size:13px; display:flex; justify-content:space-between; margin-bottom:22px}
-  .phase{font-size:13px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.08em}
-  .qtext{font-size:21px; font-weight:700; margin:6px 0 20px; letter-spacing:-.01em}
-  .opt{
-    display:block; width:100%; text-align:left; background:var(--card2); color:var(--ink);
-    border:1px solid var(--line); border-radius:14px; padding:16px 18px; font-size:16px; margin-bottom:12px;
-    transition:transform .1s ease, border-color .12s ease, background .12s ease;
-  }
-  .opt:hover{transform:translateY(-2px); border-color:#4a4f86; background:#23284a}
-  .nav{display:flex; justify-content:space-between; align-items:center; margin-top:8px}
-  .back{background:transparent; color:var(--muted); font-size:15px; padding:8px 4px}
-  .back:hover{color:var(--ink)}
-  .typebadge{display:inline-flex; align-items:center; gap:10px; font-size:14px; color:var(--muted); margin-bottom:8px; flex-wrap:wrap}
-  .stack{display:flex; flex-direction:column; gap:14px; margin:22px 0}
-  .frow{display:grid; grid-template-columns:54px 1fr; gap:14px; align-items:center}
-  .fcode{font-weight:800; font-size:17px; text-align:center; padding:10px 0; border-radius:12px; background:var(--card2)}
-  .fcode.t{color:var(--t)} .fcode.f{color:var(--f)} .fcode.s{color:var(--s)} .fcode.n{color:var(--n)}
-  .fmeter{position:relative}
-  .ftop{display:flex; justify-content:space-between; font-size:14px; margin-bottom:5px; gap:8px}
-  .ftop .role{color:var(--muted); white-space:nowrap}
-  .track{height:12px; background:var(--card2); border-radius:999px; overflow:hidden}
-  .fill{height:100%; border-radius:999px; transition:width .8s cubic-bezier(.2,.8,.2,1)}
-  .fill.t{background:var(--t)} .fill.f{background:var(--f)} .fill.s{background:var(--s)} .fill.n{background:var(--n)}
-  .section{margin-top:26px; padding-top:24px; border-top:1px solid var(--line)}
-  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px}
-  @media(max-width:560px){ .grid2{grid-template-columns:1fr} .card{padding:22px} }
-  .panel{background:var(--card2); border:1px solid var(--line); border-radius:14px; padding:16px}
-  .panel h3{margin:0 0 8px; font-size:16px}
-  .fdesc{display:flex; gap:12px; padding:12px 0; border-bottom:1px dashed var(--line)}
-  .fdesc:last-child{border-bottom:none}
-  .dot{width:12px; height:12px; border-radius:50%; margin-top:6px; flex:0 0 auto}
-  .dot.t{background:var(--t)} .dot.f{background:var(--f)} .dot.s{background:var(--s)} .dot.n{background:var(--n)}
-  .note{background:rgba(255,174,92,.08); border:1px solid rgba(255,174,92,.3); color:#ffd9a8; border-radius:12px; padding:12px 14px; font-size:14px; margin-top:18px}
-  .conf{font-size:14px; color:var(--muted); margin-top:4px}
-  .pill{display:inline-block; background:var(--card2); border:1px solid var(--line); border-radius:999px; padding:5px 12px; font-size:13px; color:var(--muted)}
-  .foot{color:var(--muted); font-size:13px; margin-top:30px; text-align:center; line-height:1.6}
   .hidden{display:none}
-  a{color:var(--t)}
+  /* questions */
+  .q{padding:18px 2px; border-top:1px solid var(--line)}
+  .q:first-child{border-top:0}
+  .qt{font-weight:650; margin-bottom:13px; font-size:17px}
+  .qn{color:var(--muted); font-variant-numeric:tabular-nums; margin-right:8px}
+  .scale{display:flex; gap:8px; flex-wrap:wrap}
+  .opt{flex:1 1 0; min-width:88px}
+  .opt input{position:absolute; opacity:0; pointer-events:none}
+  .opt label{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-align:center;
+    font-size:12.5px; color:var(--muted); cursor:pointer; border:1px solid var(--line); border-radius:12px; padding:11px 6px;
+    background:var(--card2); transition:.12s; height:100%}
+  .opt label .dot{width:15px; height:15px; border-radius:50%; border:2px solid var(--line)}
+  .opt label:hover{border-color:#4a4f86; color:var(--ink)}
+  .opt input:checked + label{border-color:var(--accent); color:var(--ink); background:#26224a; box-shadow:0 0 0 1px var(--accent) inset}
+  .opt input:checked + label .dot{border-color:var(--accent); background:var(--accent)}
+  .bar{position:sticky; bottom:0; background:linear-gradient(180deg,rgba(14,16,32,0),var(--bg) 32%); padding:18px 0 6px; margin-top:10px}
+  .row{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+  .prog{flex:1; height:9px; background:var(--card2); border-radius:999px; overflow:hidden; min-width:160px}
+  .prog>i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--ti),var(--accent),var(--fe),var(--se)); transition:width .25s}
+  .count{color:var(--muted); font-variant-numeric:tabular-nums; font-size:14px}
+  /* result */
+  .typecode{font-size:clamp(40px,9vw,58px); font-weight:800; letter-spacing:3px; margin:6px 0; color:var(--accent)}
+  .essence{color:var(--muted); font-size:18px; margin:0 0 10px}
+  .conf{display:inline-block; border-radius:9px; padding:5px 12px; font-size:13px; font-weight:700}
+  .conf.High{background:#16382a; color:var(--good)} .conf.Moderate{background:#3a2f17; color:var(--warn)} .conf.Close{background:#3a1d1d; color:var(--bad)}
+  .stack{display:grid; gap:11px}
+  .slot{display:flex; gap:15px; align-items:flex-start; background:var(--card2); border:1px solid var(--line); border-radius:14px; padding:15px 17px}
+  .badge{flex:none; width:56px; height:56px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; color:#0e1020}
+  .slot .role{font-size:12px; letter-spacing:.6px; text-transform:uppercase; color:var(--muted)}
+  .slot .fname{font-weight:700; margin:2px 0 4px}
+  .gx{border-left:3px solid var(--line); padding:4px 0 4px 16px; margin:15px 0}
+  .gx.good{border-color:var(--good)} .gx.warn{border-color:var(--warn)} .gx.grow{border-color:var(--accent)}
+  .gx h4{margin:0 0 5px; font-size:16.5px}
+  .barbox{display:grid; grid-template-columns:42px 1fr 40px; gap:10px; align-items:center; margin:6px 0}
+  .barbox .track{height:13px; background:var(--card2); border-radius:999px; overflow:hidden}
+  .barbox .track>i{display:block; height:100%; border-radius:999px}
+  .barbox .fl{font-weight:800; font-size:13px} .barbox .pc{text-align:right; color:var(--muted); font-variant-numeric:tabular-nums; font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- INTRO -->
-  <section id="intro" class="card">
-    <h1>The Function&nbsp;Stack Test</h1>
-    <p class="lede">Carl Jung proposed that the mind runs on four <strong>functions</strong> — two ways of <em>deciding</em> and two ways of <em>perceiving</em>. We all use all four, but in a personal order, or <strong>stack</strong>. This test finds yours.</p>
-    <div class="chips">
-      <span class="chip t">Thinking — logic &amp; analysis</span>
-      <span class="chip f">Feeling — values &amp; people</span>
-      <span class="chip s">Sensing — facts &amp; the present</span>
-      <span class="chip n">Intuition — patterns &amp; possibility</span>
+  <!-- ============ INTRO ============ -->
+  <div id="intro">
+    <h1>What's your cognitive function stack?</h1>
+    <p class="lede">A Thinking · Feeling · Intuiting · Sensing test, built on Jung's cognitive functions and the modern function-stack model.</p>
+
+    <div class="card">
+      <p style="margin-top:0"><strong>What this measures.</strong> Carl Jung described four mental functions — <em>Sensing, Intuiting, Thinking, Feeling</em> — each turned either <em>outward</em> (extraverted) or <em>inward</em> (introverted). That makes <strong>eight functions</strong>. Everyone uses all eight, but in a personal <strong>order of preference</strong> — your "stack": a <strong>dominant</strong>, an <strong>auxiliary</strong>, a <strong>tertiary</strong>, and an <strong>inferior</strong>.</p>
+      <p>This test scores all eight, then matches you to the <strong>best-fitting of the 16 valid stacks</strong> — so you can never get an impossible result — and reports your confidence plus the runner-up if it's a close call.</p>
+      <p style="margin-bottom:6px"><strong>How to answer honestly — this is what makes it accurate:</strong></p>
+      <ul class="clean">
+        <li>Answer as you <strong>actually are</strong>, not as you'd like to be or how you act at work.</li>
+        <li>Go with your <strong>first instinct</strong>; don't overthink any single item.</li>
+        <li>Think across your <strong>whole life</strong>, not just this week's mood.</li>
+        <li>Use the strong ends when something really fits — or really doesn't.</li>
+      </ul>
     </div>
-    <p class="lede" style="margin-top:14px">Thinking opposes Feeling, and Sensing opposes Intuition — so your strongest function and your weakest are always a pair. The test ranks all four into your stack, adds whether you lean <strong>introverted or extraverted</strong>, and names which of Jung's <strong>8 classic types</strong> you lead with — with guidance.</p>
-    <div class="meta">
-      <span>⏱️ ~5 minutes</span>
-      <span>📋 28 questions</span>
-      <span>🔒 100% private — nothing leaves your browser</span>
+
+    <div class="row" style="margin-top:18px">
+      <button class="btn" onclick="start()">Begin the test →</button>
+      <span class="note">40 questions · ~6–8 min · runs entirely in your browser, nothing is uploaded</span>
     </div>
-    <button class="btn" onclick="start()">Start the test →</button>
-    <p class="foot" style="text-align:left; margin-top:24px">Just pick the answer that feels <em>most like you</em> — not the one that sounds best. Option order is shuffled so you can't game it. This is a reflective tool grounded in Jungian typology, not a clinical instrument.</p>
-  </section>
+  </div>
 
-  <!-- QUIZ -->
-  <section id="quiz" class="card hidden">
-    <div class="progress"><div id="bar" class="bar"></div></div>
-    <div class="pcount"><span id="qnum"></span><span id="ppct">0%</span></div>
-    <div id="phase" class="phase"></div>
-    <div id="qtext" class="qtext"></div>
-    <div id="opts"></div>
-    <div class="nav"><button class="back" id="backBtn" onclick="back()">← Back</button><span></span></div>
-  </section>
+  <!-- ============ TEST ============ -->
+  <div id="test" class="hidden">
+    <h1 style="font-size:24px">Answer with your first instinct</h1>
+    <p class="lede">There are no right answers. Rate how true each statement is of you.</p>
+    <div class="card" id="questions"></div>
+    <div class="bar">
+      <div class="row">
+        <div class="prog"><i id="progbar"></i></div>
+        <span class="count"><span id="answered">0</span> / 40</span>
+        <button class="btn" id="revealBtn" onclick="reveal()">Reveal my stack →</button>
+      </div>
+      <p id="warn" class="note hidden" style="color:var(--warn); margin:10px 0 0">Please answer all questions — the unanswered ones are highlighted above.</p>
+    </div>
+  </div>
 
-  <!-- RESULTS -->
-  <section id="result" class="card hidden"></section>
-
-  <p class="foot">A reflective tool · the four functions &amp; eight types after C. G. Jung, <em>Psychological Types</em> (1921) · the MBTI® function-stack convention is used for ordering. Not affiliated with or endorsed by the MBTI trademark holder.</p>
+  <!-- ============ RESULT ============ -->
+  <div id="result" class="hidden"></div>
 </div>
 
 <script>
-/* ---------------- DATA ---------------- */
-// Base functions
-const BASE = {
-  T:{name:"Thinking", cls:"t", color:"var(--t)", axis:"J"},
-  F:{name:"Feeling",  cls:"f", color:"var(--f)", axis:"J"},
-  S:{name:"Sensing",  cls:"s", color:"var(--s)", axis:"P"},
-  N:{name:"Intuition",cls:"n", color:"var(--n)", axis:"P"}
-};
-const OPP = {T:"F", F:"T", S:"N", N:"S"};
-
-// The 8 attitudinal functions (base + introverted/extraverted), with blurbs for the stack readout.
-const FN8 = {
-  Te:{name:"Extraverted Thinking", base:"T", blurb:"Organises the outer world with logic — goals, structure, efficiency and measurable results."},
-  Ti:{name:"Introverted Thinking", base:"T", blurb:"Builds precise internal logical frameworks; prizes accuracy and understanding how things truly work."},
-  Fe:{name:"Extraverted Feeling",  base:"F", blurb:"Reads and tends the shared emotional climate; seeks harmony, connection and others' wellbeing."},
-  Fi:{name:"Introverted Feeling",  base:"F", blurb:"Holds a deep inner compass of personal values; prizes authenticity and integrity."},
-  Se:{name:"Extraverted Sensing",  base:"S", blurb:"Engages fully with the concrete present — action, sensation, opportunity, what's real right now."},
-  Si:{name:"Introverted Sensing",  base:"S", blurb:"Draws on a rich inner store of detail and memory; values reliability and the proven."},
-  Ne:{name:"Extraverted Intuition",base:"N", blurb:"Generates possibilities and connections; thrives on novelty, ideas and what could be."},
-  Ni:{name:"Introverted Intuition",base:"N", blurb:"Synthesises patterns over time into a single insight about where things are heading."}
-};
-
-// Guidance for each of Jung's 8 types, keyed by the dominant attitudinal function.
-const TYPE8 = {
-  Te:{title:"The Director", tag:"Extraverted Thinking type",
-    overview:"You lead by organising the outer world toward clear goals. Decisive, structured and results-driven, you bring order to chaos and make things happen efficiently.",
-    strengths:["Decisiveness and a bias for action","Organising people and resources toward a goal","Clear standards and logical judgement","Getting tangible results"],
-    growth:["Make room for feelings and values — yours and others' (your inferior Fi)","Avoid steamrolling people in pursuit of efficiency","Pause to ask whether the goal still matters before charging ahead"],
-    tips:["Invite quiet input before deciding","Schedule real downtime, not just productivity","Check the human cost of a plan, not only the outcome"]},
-  Ti:{title:"The Analyst", tag:"Introverted Thinking type",
-    overview:"You lead by building a precise internal model of how things work. Independent, calm and principled, you cut through confusion with clean reasoning.",
-    strengths:["Rigorous, consistent logic","Troubleshooting and problem-solving","Strong autonomy and self-reliance","Honesty about what's actually true"],
-    growth:["Share warmth and feeling outwardly (your inferior Fe)","Move from analysing to acting and finishing","Verbalise your reasoning so others can follow it"],
-    tips:["Tell people directly what you value about them","Ship the thing — don't perfect it forever","Invest steadily in a few key relationships"]},
-  Fe:{title:"The Harmoniser", tag:"Extraverted Feeling type",
-    overview:"You lead by tending the emotional climate around you. Warm, attuned and connecting, you bring people together and lift the mood of a room.",
-    strengths:["Empathy and reading people accurately","Building harmony and rapport","Motivating and supporting others","Creating belonging"],
-    growth:["Honour your own inner logic and truth (your inferior Ti)","Tolerate conflict instead of smoothing it over","Watch for over-pleasing and burnout"],
-    tips:["Check in on your own needs, not just everyone else's","Let disagreement surface — it's often necessary","Protect regular solitude to hear your own voice"]},
-  Fi:{title:"The Idealist", tag:"Introverted Feeling type",
-    overview:"You lead by an inner compass of deeply held values. Authentic, principled and quietly intense, you stay true to what genuinely matters to you.",
-    strengths:["Integrity and a strong moral compass","Deep empathy and authenticity","Knowing your own values clearly","Loyalty to what matters"],
-    growth:["Organise and act in the outer world (your inferior Te)","Share your values aloud instead of holding them in","Remember not everything is personal"],
-    tips:["Turn values into one concrete action this week","Communicate your boundaries directly","Zoom out to impartial logic when deciding"]},
-  Se:{title:"The Doer", tag:"Extraverted Sensing type",
-    overview:"You lead by immersing fully in the concrete present. Bold, adaptable and alive to the moment, you read real situations and act on them decisively.",
-    strengths:["Total presence and situational awareness","Courage to act when others hesitate","Realism and practicality","Adaptability under pressure"],
-    growth:["Develop foresight — ask where this leads (your inferior Ni)","Pause before acting on impulse","Weigh long-term consequences, not just the now"],
-    tips:["Before acting, ask “where does this lead in a month?”","Pick one long-term aim and protect it","Channel energy into mastery, not just novelty"]},
-  Si:{title:"The Steward", tag:"Introverted Sensing type",
-    overview:"You lead by drawing on a rich inner store of detail, memory and what has proven reliable. Steady, careful and dependable, you keep things running and people supported.",
-    strengths:["Reliability and follow-through","Thoroughness and attention to detail","Strong memory for what works","Steady, calm dependability"],
-    growth:["Stay open to new possibilities and change (your inferior Ne)","Don't over-rely on “how it's always been done”","Let go of some detail to see the big picture"],
-    tips:["Try one genuinely new approach this month","Question an old assumption you take for granted","Allow more flexibility in your routines"]},
-  Ne:{title:"The Explorer", tag:"Extraverted Intuition type",
-    overview:"You lead by generating possibilities and spotting connections. Curious, inventive and energising, you see what could be and pull others toward new ideas.",
-    strengths:["Idea generation and creativity","Spotting connections others miss","Enthusiasm and adaptability","Seeing potential everywhere"],
-    growth:["Ground ideas in detail and follow through (your inferior Si)","Finish what you start before chasing the next idea","Respect the practical and the proven"],
-    tips:["Pick one idea and see it all the way through","Build a few steady routines to anchor you","Value tested experience, not just novelty"]},
-  Ni:{title:"The Seer", tag:"Introverted Intuition type",
-    overview:"You lead by synthesising patterns over time into a single, often unexplainable insight about where things are heading. Visionary, deep and focused, you see the destination before others see the road.",
-    strengths:["Foresight and long-range vision","Synthesising complexity into one insight","Depth and singular focus","Sensing meaning beneath the surface"],
-    growth:["Engage the physical, present world (your inferior Se)","Don't live only in the future — test visions in reality","Stay open to new data that challenges the vision"],
-    tips:["Turn each vision into one concrete next step","Move your body and do something tangible daily","Hold your insights lightly until reality confirms them"]},
-};
-
-// Closest MBTI type, by dominant + auxiliary attitudinal function (a bonus readout).
-const MBTI = {
-  Ni:{Fe:"INFJ", Te:"INTJ"}, Ne:{Fi:"ENFP", Ti:"ENTP"},
-  Si:{Fe:"ISFJ", Te:"ISTJ"}, Se:{Fi:"ESFP", Ti:"ESTP"},
-  Ti:{Se:"ISTP", Ne:"INTP"}, Te:{Si:"ESTJ", Ni:"ENTJ"},
-  Fi:{Se:"ISFP", Ne:"INFP"}, Fe:{Si:"ESFJ", Ni:"ENFJ"}
-};
-
-const ROLES = ["Dominant","Auxiliary","Tertiary","Inferior"];
-
-/* ---- PART 1: 20 function questions (one T/F/S/N option each) ---- */
-const QF = [
- {q:"When tackling a problem, you focus first on…", o:{
-   T:"The logic — what's consistent and what doesn't add up.",
-   F:"The people — how it affects everyone involved.",
-   S:"The facts — what's concretely true right now.",
-   N:"The pattern — what it connects to and where it leads."}},
- {q:"You're most naturally drawn to…", o:{
-   N:"Ideas, possibilities, and what could be.",
-   S:"Realities, facts, and what actually is.",
-   T:"Principles, systems, and what's logically true.",
-   F:"Values, relationships, and what genuinely matters."}},
- {q:"People would say you're especially good at…", o:{
-   T:"Cutting to the logical core of a problem.",
-   F:"Sensing what people need.",
-   S:"Getting real things done well.",
-   N:"Spotting where things are heading."}},
- {q:"You make your best decisions by…", o:{
-   T:"Stepping back and weighing the logic impartially.",
-   F:"Considering what's important to you and to others.",
-   S:"Looking at concrete evidence and past experience.",
-   N:"Trusting an insight about how things will unfold."}},
- {q:"In a conversation, you tune in most to…", o:{
-   S:"The concrete facts and details being shared.",
-   N:"The underlying themes and implications.",
-   T:"Whether the argument actually holds together.",
-   F:"How the other person seems to be feeling."}},
- {q:"You learn best when you can…", o:{
-   S:"Work with real, hands-on examples.",
-   N:"Explore the concepts and how they interconnect.",
-   T:"Understand the logical structure behind it.",
-   F:"Relate it to people and what it means for them."}},
- {q:"What bothers you most is…", o:{
-   T:"Reasoning that's inconsistent or sloppy.",
-   F:"People being treated coldly or unfairly.",
-   S:"Impractical ideas with no grounding in reality.",
-   N:"Vague, literal thinking that misses the deeper possibilities."}},
- {q:"Your attention naturally goes to…", o:{
-   N:"What's possible and not yet realised.",
-   S:"What's actually present and verifiable.",
-   F:"The emotional tone and what people care about.",
-   T:"The mechanics — how and why things work."}},
- {q:"A good plan is one that…", o:{
-   T:"Is logically efficient and well-reasoned.",
-   F:"Works well for the people it affects.",
-   S:"Is realistic and concrete in its steps.",
-   N:"Serves a meaningful long-term vision."}},
- {q:"You'd describe yourself as more…", o:{
-   S:"Practical and down-to-earth.",
-   N:"Imaginative and future-oriented.",
-   T:"Logical and analytical.",
-   F:"Warm and values-driven."}},
- {q:"When you read or watch something, you most remember…", o:{
-   S:"The specific facts and what literally happened.",
-   N:"The themes, symbolism, and what it implies.",
-   F:"How it made you and the characters feel.",
-   T:"Whether the logic and the world held together."}},
- {q:"You feel most competent when…", o:{
-   T:"You've reasoned something out correctly.",
-   F:"You've genuinely helped or connected with someone.",
-   S:"You've handled a real, practical situation well.",
-   N:"You've grasped a deeper pattern others missed."}},
- {q:"Given free time, you'd rather…", o:{
-   N:"Brainstorm possibilities and chase ideas.",
-   S:"Do something tangible and hands-on.",
-   F:"Spend meaningful time with people.",
-   T:"Dig into how something works and master it."}},
- {q:"You most trust…", o:{
-   S:"What you can see, touch, and verify.",
-   N:"Your hunches about where things are going.",
-   T:"Conclusions you've reasoned to logically.",
-   F:"What aligns with your values and feels right."}},
- {q:"Others rely on you for…", o:{
-   T:"A clear-headed, objective take.",
-   F:"Emotional understanding and support.",
-   S:"Practical, realistic help.",
-   N:"A vision of the possibilities."}},
- {q:"The compliment that lands best is…", o:{
-   N:"“You're so insightful and imaginative.”",
-   S:"“You're so capable and grounded.”",
-   T:"“Your thinking is so sharp and clear.”",
-   F:"“You're so caring and understanding.”"}},
- {q:"You tend to evaluate ideas by…", o:{
-   T:"Whether they're logically sound.",
-   F:"Whether they honour what matters to people.",
-   S:"Whether they actually work in practice.",
-   N:"Whether they open up new possibilities."}},
- {q:"At your core, you most value…", o:{
-   T:"Truth and competence.",
-   F:"Harmony and authenticity.",
-   S:"Reliability and realism.",
-   N:"Insight and meaning."}},
- {q:"When something goes wrong, you first…", o:{
-   T:"Analyse what logically caused it.",
-   F:"Check how everyone is doing.",
-   S:"Deal with the concrete facts in front of you.",
-   N:"Sense what it signals about the bigger situation."}},
- {q:"You're at your best when you can…", o:{
-   N:"Follow an idea wherever it leads.",
-   S:"Engage directly with the real world.",
-   T:"Solve a problem through clear reasoning.",
-   F:"Act in line with your values and care for others."}}
+/* ---------- 1. Item bank: 5 behavioral items per function, jargon-free ---------- */
+const QUESTIONS = [
+  {t:'Se',q:'I notice and respond to what is happening around me right now better than most people.'},
+  {t:'Se',q:'I love physical, hands-on activities where I can act in the moment.'},
+  {t:'Se',q:'I trust direct experience and concrete reality over theories about it.'},
+  {t:'Se',q:'When a situation suddenly changes, I react and adapt fast.'},
+  {t:'Se',q:'I am drawn to vivid sensory experiences — taste, motion, sights, sounds.'},
+  {t:'Si',q:'I rely on past experience and what has reliably worked before.'},
+  {t:'Si',q:'I quickly notice when a small detail differs from how it usually is.'},
+  {t:'Si',q:'I like stable routines and find comfort in familiar ways of doing things.'},
+  {t:'Si',q:'I keep careful track of practical details and remember them accurately.'},
+  {t:'Si',q:'I am very attuned to my body, my health, and my steady habits.'},
+  {t:'Ne',q:'My mind jumps quickly between possibilities and unexpected connections.'},
+  {t:'Ne',q:'I get excited by new ideas, options, and "what if" scenarios.'},
+  {t:'Ne',q:'I tend to see many possible interpretations or directions in any situation.'},
+  {t:'Ne',q:'I would rather explore lots of options than commit to one too early.'},
+  {t:'Ne',q:'I often take a starting point and riff it into something new.'},
+  {t:'Ni',q:'I often sense how things will unfold before I can explain why.'},
+  {t:'Ni',q:'I look for the single underlying meaning or pattern behind events.'},
+  {t:'Ni',q:'Insights sometimes arrive whole, as a sudden inner certainty.'},
+  {t:'Ni',q:'I am guided by a long-term vision and filter everything through it.'},
+  {t:'Ni',q:'I instinctively reduce complex things down to their essential core.'},
+  {t:'Te',q:'I naturally organize people and resources to reach a goal efficiently.'},
+  {t:'Te',q:'I judge an idea mainly by whether it measurably works in the real world.'},
+  {t:'Te',q:'I like setting up systems, plans, and metrics to get things done.'},
+  {t:'Te',q:'I push to make decisions and move things to completion.'},
+  {t:'Te',q:'I value competence and clear results more than smooth feelings.'},
+  {t:'Ti',q:'I need to understand exactly how and why something works on the inside.'},
+  {t:'Ti',q:'I notice logical inconsistencies and want precise definitions.'},
+  {t:'Ti',q:'I build my own internal framework rather than accept received answers.'},
+  {t:'Ti',q:'I mentally take things apart to understand the underlying logic.'},
+  {t:'Ti',q:'Internal logical consistency matters to me more than outside approval.'},
+  {t:'Fe',q:'I quickly sense the emotional atmosphere of a group and adjust to it.'},
+  {t:'Fe',q:'I care a lot about keeping harmony and meeting other people’s needs.'},
+  {t:'Fe',q:'I naturally express warmth and help draw people together.'},
+  {t:'Fe',q:'I am very aware of social expectations and what is appropriate for others.'},
+  {t:'Fe',q:'I can feel what others feel almost as if it were happening to me.'},
+  {t:'Fi',q:'I have a strong inner sense of what is right for me, whatever others think.'},
+  {t:'Fi',q:'I check my decisions against my personal values and staying authentic.'},
+  {t:'Fi',q:'I need to stay true to myself even when it is unpopular.'},
+  {t:'Fi',q:'My deepest feelings are private and intensely personal.'},
+  {t:'Fi',q:'I am very sensitive to what genuinely matters to me beneath the surface.'},
 ];
 
-/* ---- PART 2: 8 orientation questions (Introvert vs Extravert) ---- */
-const QA = [
- {q:"After a long social gathering, you usually feel…", o:{
-   E:"Energised and ready for more.",
-   I:"Drained, and in need of some alone time."}},
- {q:"You do your best thinking…", o:{
-   I:"Privately, in your own head, before speaking.",
-   E:"Out loud, by talking it through with others."}},
- {q:"In a group, you tend to…", o:{
-   E:"Speak up readily and think on your feet.",
-   I:"Hold back, listen, and share once you've reflected."}},
- {q:"Your energy comes mostly from…", o:{
-   I:"Your inner world of thoughts and reflections.",
-   E:"The outer world of people, activity and events."}},
- {q:"You're more energised by…", o:{
-   E:"Meeting and engaging with lots of different people.",
-   I:"A few close connections rather than many casual ones."}},
- {q:"A free evening is best spent…", o:{
-   I:"Quietly — alone or with one close person.",
-   E:"Out and about, around people and activity."}},
- {q:"You more naturally…", o:{
-   E:"Act first, then reflect.",
-   I:"Reflect first, then act."}},
- {q:"You'd rather your work be…", o:{
-   E:"Collaborative and interactive.",
-   I:"Independent and self-directed."}}
+/* ---------- 2. The 16 valid stacks ---------- */
+const STACKS = {
+  ESTP:['Se','Ti','Fe','Ni'], ESFP:['Se','Fi','Te','Ni'],
+  ISTJ:['Si','Te','Fi','Ne'], ISFJ:['Si','Fe','Ti','Ne'],
+  ENTP:['Ne','Ti','Fe','Si'], ENFP:['Ne','Fi','Te','Si'],
+  INTP:['Ti','Ne','Si','Fe'], INFP:['Fi','Ne','Si','Te'],
+  ESTJ:['Te','Si','Ne','Fi'], ENTJ:['Te','Ni','Se','Fi'],
+  ESFJ:['Fe','Si','Ne','Ti'], ENFJ:['Fe','Ni','Se','Ti'],
+  ISTP:['Ti','Se','Ni','Fe'], ISFP:['Fi','Se','Ni','Te'],
+  INTJ:['Ni','Te','Fi','Se'], INFJ:['Ni','Fe','Ti','Se'],
+};
+
+/* ---------- 3. Function knowledge base ---------- */
+const FN = {
+  Se:{name:'Extraverted Sensing', color:'var(--se)', word:'the live wire',
+      desc:'living fully in the present, reading concrete reality, and acting decisively on what is actually in front of you',
+      grip:'overindulging the senses to escape — bingeing on food, spending, or scrolling, chasing physical thrills, and fixating on sensory detail you would normally ignore'},
+  Si:{name:'Introverted Sensing', color:'var(--si)', word:'the keeper',
+      desc:'drawing on stored experience, honoring what is reliable, and tracking the concrete details that keep life stable',
+      grip:'sinking into worry about your body and health, gloomy fixation on past mistakes, and rigid clinging to routine'},
+  Ne:{name:'Extraverted Intuition', color:'var(--ne)', word:'the spark',
+      desc:'spotting possibilities and hidden connections, and turning any starting point into a web of fresh ideas',
+      grip:'spiralling into catastrophic "what if everything goes wrong" scenarios you cannot turn off'},
+  Ni:{name:'Introverted Intuition', color:'var(--ni)', word:'the seer',
+      desc:'sensing where things are heading and distilling complexity down to a single underlying insight',
+      grip:'latching onto one dark, fatalistic certainty about the future and treating a gut foreboding as inevitable doom'},
+  Te:{name:'Extraverted Thinking', color:'var(--te)', word:'the organizer',
+      desc:'organizing the outer world — systems, plans, metrics — to get measurable results efficiently',
+      grip:'becoming harshly controlling and critical, barking orders, and obsessing over competence and being "right"'},
+  Ti:{name:'Introverted Thinking', color:'var(--ti)', word:'the analyst',
+      desc:'building a precise internal model of how things truly work, and prizing logical consistency',
+      grip:'retreating into cold, hair-splitting over-analysis, nitpicking flaws, and detaching from people to "solve" things'},
+  Fe:{name:'Extraverted Feeling', color:'var(--fe)', word:'the harmonizer',
+      desc:'reading and tending the emotional climate around you, and weaving people into harmony',
+      grip:'becoming hypersensitive to approval, taking things personally, and erupting over feeling unappreciated'},
+  Fi:{name:'Introverted Feeling', color:'var(--fi)', word:'the heart',
+      desc:'knowing what genuinely matters to you and staying true to an inner compass of values',
+      grip:'being flooded by raw personal emotion, brooding that nobody values the real you, and withdrawing into hurt'},
+};
+
+const ESSENCE = {
+  ESTP:'The Operator — bold, observant, built for real-time action.',
+  ESFP:'The Performer — warm, spontaneous, alive to the moment and the people in it.',
+  ISTJ:'The Steward — dependable, precise, the keeper of what works.',
+  ISFJ:'The Protector — quietly devoted, attentive, caretaking through practical detail.',
+  ENTP:'The Inventor — restless idea-machine who loves to test every angle.',
+  ENFP:'The Catalyst — possibility-seeking, people-loving, contagious with enthusiasm.',
+  INTP:'The Architect of Ideas — a builder of precise mental models for their own sake.',
+  INFP:'The Idealist — guided by deep personal values and quiet imagination.',
+  ESTJ:'The Director — decisive executor who brings order and gets it shipped.',
+  ENTJ:'The Commander — strategic driver who builds the plan and runs the play.',
+  ESFJ:'The Host — generous, tuned-in, the social glue that keeps people cared for.',
+  ENFJ:'The Mentor — inspiring, persuasive, devoted to others’ growth.',
+  ISTP:'The Craftsman — cool-headed troubleshooter who learns by taking it apart.',
+  ISFP:'The Artist — gentle, sensory, living true to a private inner code.',
+  INTJ:'The Strategist — long-range visionary who engineers the future deliberately.',
+  INFJ:'The Counselor — insightful, principled, reading the depths beneath the surface.',
+};
+
+const ROLE = [
+  {k:'Dominant', cls:'good', icon:'🔑', head:'Your superpower',
+   line:f=>`This is your core engine — <strong>${FN[f].desc}</strong>. It runs almost on autopilot and is where you are most naturally gifted. Trust it — but notice that what comes easiest can become a blind spot when you lean on it for everything.`},
+  {k:'Auxiliary', cls:'good', icon:'🤝', head:'Your co-pilot — grow this on purpose',
+   line:f=>`This balances your dominant by <strong>${FN[f].desc}</strong>. Maturity is largely the work of <em>consciously</em> developing this function. When it is online you feel whole and effective; when you neglect it you become a caricature of just your dominant.`},
+  {k:'Tertiary', cls:'warn', icon:'🎈', head:'Your relief & soft spot',
+   line:f=>`This is your playful, comforting side — <strong>${FN[f].desc}</strong>. It is seductive because it feels easy, but it shares your dominant’s direction, so over-relying on it can pull you into a self-reinforcing "loop" (below).`},
+  {k:'Inferior', cls:'grow', icon:'🌱', head:'Your growth edge & stress point',
+   line:f=>`This is your least developed function — <strong>${FN[f].desc}</strong>. Developing it slowly is the richest growth available to you. But under prolonged stress it can hijack you (the "grip"), showing up as ${FN[f].grip}.`},
 ];
 
-/* ---------------- ENGINE ---------------- */
-const FKEYS=["T","F","S","N"];
-let stepFns=[];   // list of {kind:'fn'|'att', i}
-let idx=0, ansF=[], ansA=[], order=[];
-
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+/* ---------- App state ---------- */
+const answers = new Array(QUESTIONS.length).fill(0);
+let order = [];
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
 function start(){
-  ansF=new Array(QF.length).fill(null);
-  ansA=new Array(QA.length).fill(null);
-  stepFns=[
-    ...QF.map((_,i)=>({kind:'fn', i})),
-    ...QA.map((_,i)=>({kind:'att', i}))
-  ];
-  order=stepFns.map(s=> s.kind==='fn' ? shuffle([...FKEYS]) : shuffle(["I","E"]));
-  idx=0;
   document.getElementById('intro').classList.add('hidden');
-  document.getElementById('result').classList.add('hidden');
-  document.getElementById('quiz').classList.remove('hidden');
-  render(); window.scrollTo(0,0);
-}
-
-function render(){
-  const step=stepFns[idx];
-  const total=stepFns.length;
-  const q = step.kind==='fn' ? QF[step.i] : QA[step.i];
-  const chosen = step.kind==='fn' ? ansF[step.i] : ansA[step.i];
-  document.getElementById('qnum').textContent=`Question ${idx+1} of ${total}`;
-  const pct=Math.round(idx/total*100);
-  document.getElementById('ppct').textContent=`${pct}%`;
-  document.getElementById('bar').style.width=`${pct}%`;
-  document.getElementById('phase').textContent = step.kind==='fn'
-    ? 'Part 1 · How you decide & perceive' : 'Part 2 · Where your energy flows';
-  document.getElementById('qtext').textContent=q.q;
-  document.getElementById('backBtn').style.visibility = idx===0 ? 'hidden':'visible';
-  const box=document.getElementById('opts'); box.innerHTML='';
-  box.setAttribute('role','radiogroup');
-  box.setAttribute('aria-label', q.q);
-  let selectedBtn=null;
-  order[idx].forEach(k=>{
-    const b=document.createElement('button');
-    b.className='opt'; b.type='button';
-    b.setAttribute('role','radio');
-    const isSel = chosen===k;
-    b.setAttribute('aria-checked', isSel?'true':'false');
-    b.textContent = (isSel?'✓  ':'') + q.o[k];
-    if(isSel){
-      const col = step.kind==='fn' ? BASE[k].color : 'var(--n)';
-      b.style.borderColor=col; b.style.borderWidth='2px'; b.style.background='#2a2f55';
-      selectedBtn=b;
+  document.getElementById('test').classList.remove('hidden');
+  order = shuffle(QUESTIONS.map((_,i)=>i));
+  const labels=['Strongly disagree','Disagree','Neutral','Agree','Strongly agree'];
+  const host=document.getElementById('questions'); host.innerHTML='';
+  order.forEach((qi,pos)=>{
+    const div=document.createElement('div'); div.className='q'; div.id='q'+qi;
+    let opts='';
+    for(let v=1;v<=5;v++){
+      opts+=`<div class="opt"><input type="radio" id="q${qi}v${v}" name="q${qi}" value="${v}" onchange="pick(${qi},${v})">
+        <label for="q${qi}v${v}"><span class="dot"></span>${labels[v-1]}</label></div>`;
     }
-    b.onclick=()=>choose(k);
-    box.appendChild(b);
+    div.innerHTML=`<div class="qt"><span class="qn">${pos+1}.</span>${QUESTIONS[qi].q}</div><div class="scale">${opts}</div>`;
+    host.appendChild(div);
   });
-  if(selectedBtn) selectedBtn.focus();
-}
-
-function choose(k){
-  const step=stepFns[idx];
-  if(step.kind==='fn') ansF[step.i]=k; else ansA[step.i]=k;
-  if(idx<stepFns.length-1){ idx++; render(); window.scrollTo({top:0,behavior:'smooth'}); }
-  else finish();
-}
-function back(){ if(idx>0){ idx--; render(); window.scrollTo({top:0,behavior:'smooth'}); } }
-
-function finish(){
-  const score={T:0,F:0,S:0,N:0};
-  ansF.forEach(k=>{ if(k) score[k]++; });
-  let eCount=0,iCount=0;
-  ansA.forEach(k=>{ if(k==='E')eCount++; else if(k==='I')iCount++; });
-  const attitude = eCount>iCount ? 'E' : 'I'; // tie -> Introverted (deterministic)
-
-  // proper attitudinal codes
-  const opp = attitude==='I' ? 'e' : 'i';
-  const self = attitude==='I' ? 'i' : 'e';
-  const ranked=[...FKEYS].sort((a,b)=> score[b]-score[a] || FKEYS.indexOf(a)-FKEYS.indexOf(b));
-  const dom=ranked[0];
-  const inf=OPP[dom];
-  const cross=FKEYS.filter(f=>BASE[f].axis!==BASE[dom].axis)
-                   .sort((a,b)=> score[b]-score[a] || FKEYS.indexOf(a)-FKEYS.indexOf(b));
-  const aux=cross[0], ter=cross[1];
-  const att=[self,opp,self,opp];
-  const order4=[dom,aux,ter,inf];
-  const stack=order4.map((f,i)=>({ base:f, code:f+att[i], role:i, pct:Math.round(score[f]/QF.length*100) }));
-
-  const domCode=stack[0].code, auxCode=stack[1].code;
-  const type=TYPE8[domCode];
-  const mbti=(MBTI[domCode]&&MBTI[domCode][auxCode]) || null;
-
-  const fgap=score[ranked[0]]-score[ranked[1]];
-  const fconf= fgap>=5?"Very clear": fgap>=3?"Clear": fgap>=1?"Moderate":"Close call";
-  const agap=Math.abs(eCount-iCount);
-  const aconf= agap>=5?"Very clear": agap>=3?"Clear": agap>=1?"Moderate":"Balanced";
-  const auxTie = score[aux]===score[ter];
-  const orientTie = eCount===iCount;
-
-  document.getElementById('result').innerHTML =
-    buildResult({stack,type,domCode,mbti,attitude,eCount,iCount,fconf,aconf,score,auxTie,orientTie});
-  document.getElementById('quiz').classList.add('hidden');
-  document.getElementById('result').classList.remove('hidden');
-  window.scrollTo(0,0);
-  requestAnimationFrame(()=>{ document.querySelectorAll('.fill').forEach(el=>{ el.style.width=el.dataset.w; }); });
-}
-
-function buildResult({stack,type,domCode,mbti,attitude,eCount,iCount,fconf,aconf,score,auxTie,orientTie}){
-  const attWord = attitude==='I' ? 'Introverted' : 'Extraverted';
-  const rows=stack.map(s=>`
-    <div class="frow">
-      <div class="fcode ${BASE[s.base].cls}">${s.code}</div>
-      <div class="fmeter">
-        <div class="ftop"><span><strong>${FN8[s.code].name}</strong></span><span class="role">${ROLES[s.role]} · ${s.pct}% of answers</span></div>
-        <div class="track"><div class="fill ${BASE[s.base].cls}" data-w="${s.pct}%" style="width:0"></div></div>
-      </div>
-    </div>`).join('');
-
-  const fdescs=stack.map(s=>`
-    <div class="fdesc">
-      <div class="dot ${BASE[s.base].cls}"></div>
-      <div><strong>${s.code} — ${FN8[s.code].name}</strong> <span style="color:var(--muted)">· ${ROLES[s.role]}</span><br>
-      <span style="color:var(--muted)">${FN8[s.code].blurb}</span></div>
-    </div>`).join('');
-
-  const mbtiLine = mbti ? `<span class="pill">Closest MBTI® type: <strong style="color:var(--ink)">${mbti}</strong></span>` : '';
-
-  return `
-    <div class="typebadge">YOUR LEADING FUNCTION IS
-      <span class="chip ${BASE[stack[0].base].cls}" style="margin-left:6px">${stack[0].code} · ${FN8[domCode].name}</span></div>
-    <h1>${type.title}</h1>
-    <p class="conf" style="font-size:16px; color:var(--ink)">${attWord} ${BASE[stack[0].base].name} type</p>
-    <div style="margin:10px 0 4px">${mbtiLine}${mbti ? `<div class="conf" style="margin-top:6px">An approximation from your top two functions — the Jungian leading function above is this test's actual result.</div>` : ''}</div>
-    <p class="lede" style="margin-top:14px">${type.overview}</p>
-    <p class="conf">Function clarity: <strong>${fconf}</strong> · ${orientTie
-      ? `Orientation: <strong>too close to call</strong> (${eCount} extraverted / ${iCount} introverted — shown as ${attWord} by default)`
-      : `Orientation: <strong>${attWord}</strong> (${eCount} extraverted / ${iCount} introverted answers — ${aconf})`}.</p>
-    ${auxTie ? `<div class="note">Your auxiliary and tertiary functions scored equally here, so the exact type name and “closest MBTI” could reasonably go either way — treat them as two close possibilities.</div>` : ''}
-
-    <div class="section">
-      <h2>Your function stack</h2>
-      <p style="color:var(--muted); margin-top:0">Bars show each function's <strong>share of your answers</strong> — relative shares that add up to ~100% across the four, not standalone strength scores. Everyone uses all four functions; this is about their <em>order</em>. That order follows Jung's model: your dominant and inferior are opposites (Thinking↔Feeling, Sensing↔Intuition), and the attitude alternates inward/outward down the stack.</p>
-      <div class="stack">${rows}</div>
-    </div>
-
-    <div class="section">
-      <h2>What each function does in you</h2>
-      ${fdescs}
-    </div>
-
-    <div class="section">
-      <div class="grid2">
-        <div class="panel">
-          <h3>💪 Your strengths</h3>
-          <ul class="clean">${type.strengths.map(s=>`<li>${s}</li>`).join('')}</ul>
-        </div>
-        <div class="panel">
-          <h3>🌱 Your growth edges</h3>
-          <ul class="clean">${type.growth.map(s=>`<li>${s}</li>`).join('')}</ul>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:18px">
-        <h3>🧭 Practical guidance</h3>
-        <ul class="clean">${type.tips.map(s=>`<li>${s}</li>`).join('')}</ul>
-      </div>
-    </div>
-
-    <div class="section">
-      <button class="btn" onclick="start()">Retake the test ↻</button>
-      <button class="btn ghost" onclick="goIntro()" style="margin-left:10px">Back to start</button>
-    </div>
-
-    <p class="foot" style="text-align:left">Remember: a test is a mirror, not a verdict. Notice what rings true and what doesn't — your honest reflection is the real result. The dominant/inferior pairing and attitude here follow Jung's model; your “closest MBTI type” is an approximation from your top two functions.</p>
-  `;
-}
-
-function goIntro(){
-  document.getElementById('result').classList.add('hidden');
-  document.getElementById('quiz').classList.add('hidden');
-  document.getElementById('intro').classList.remove('hidden');
   window.scrollTo(0,0);
 }
+function pick(qi,v){
+  answers[qi]=v;
+  document.getElementById('q'+qi).style.background='';
+  const n=answers.filter(x=>x>0).length;
+  document.getElementById('answered').textContent=n;
+  document.getElementById('progbar').style.width=(n/QUESTIONS.length*100)+'%';
+}
+function reveal(){
+  const missing=[]; answers.forEach((v,i)=>{ if(!v) missing.push(i); });
+  if(missing.length){
+    document.getElementById('warn').classList.remove('hidden');
+    missing.forEach(i=>{ document.getElementById('q'+i).style.background='#3a1d1d'; });
+    document.getElementById('q'+missing[0]).scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  computeResult();
+}
+
+/* ---------- Scoring ---------- */
+function computeResult(){
+  const fns=Object.keys(FN);
+  const raw={}; fns.forEach(f=>raw[f]=0);
+  QUESTIONS.forEach((q,i)=>raw[q.t]+=answers[i]);            // each 5..25
+  const vals=fns.map(f=>raw[f]);
+  const mean=vals.reduce((a,b)=>a+b,0)/vals.length;
+  const sd=Math.sqrt(vals.reduce((a,b)=>a+(b-mean)**2,0)/vals.length)||1;
+  const z={}; fns.forEach(f=>z[f]=(raw[f]-mean)/sd);          // standardize → cancels yes-to-everything bias
+  const W=[4,3,2,1];
+  const fit=[];
+  for(const [type,st] of Object.entries(STACKS)){
+    let s=0; st.forEach((f,idx)=>s+=W[idx]*z[f]); fit.push([type,s]);
+  }
+  fit.sort((a,b)=>b[1]-a[1]);
+  const best=fit[0], second=fit[1], worst=fit[fit.length-1];
+  const ratio=(best[1]-second[1])/((best[1]-worst[1])||1);
+  const conf= ratio>0.22 ? 'High' : ratio>0.10 ? 'Moderate' : 'Close';
+  render(best[0], second[0], conf, raw);
+}
+function pctOf(raw){ return Math.round((raw-5)/20*100); }     // 5..25 → 0..100
+
+function render(type, runner, conf, raw){
+  const st=STACKS[type];
+  const confTxt={High:'High confidence — your answers point clearly to one stack.',
+                 Moderate:'Moderate confidence — a likely fit, but read the runner-up too.',
+                 Close:'Close call — your top two are neck-and-neck. Read both and trust the one that <em>feels</em> truest from the inside.'}[conf];
+  const fnsSorted=Object.keys(FN).sort((a,b)=>raw[b]-raw[a]);
+  let bars='';
+  fnsSorted.forEach(f=>{
+    const pc=Math.max(2,pctOf(raw[f]));
+    bars+=`<div class="barbox"><div class="fl" style="color:${FN[f].color}">${f}</div>
+      <div class="track"><i style="width:${pc}%;background:${FN[f].color}"></i></div>
+      <div class="pc">${pctOf(raw[f])}</div></div>`;
+  });
+  const roleNames=['Dominant','Auxiliary','Tertiary','Inferior'];
+  let slots='';
+  st.forEach((f,i)=>{
+    slots+=`<div class="slot"><div class="badge" style="background:${FN[f].color}">${f}</div>
+      <div><div class="role">${roleNames[i]} function</div>
+      <div class="fname">${FN[f].name} — “${FN[f].word}”</div>
+      <div class="note" style="color:var(--ink)">${cap(FN[f].desc)}.</div></div></div>`;
+  });
+  let guide='';
+  st.forEach((f,i)=>{ const r=ROLE[i];
+    guide+=`<div class="gx ${r.cls}"><h4>${r.icon} ${r.head}: ${FN[f].name} (${f})</h4><p style="margin:0">${r.line(f)}</p></div>`; });
+
+  const dom=st[0],aux=st[1],ter=st[2],inf=st[3];
+  const domAtt=dom.endsWith('e')?'outward':'inward';
+  const auxKind = aux[0]==='F' ? (aux==='Fe'?'checking in with the people and relationships around you':'checking what you actually value and feel')
+                : aux[0]==='T' ? (aux==='Te'?'organizing reality and pressure-testing ideas against results':'pressure-testing your logic for consistency')
+                : aux[0]==='S' ? (aux==='Se'?'grounding yourself in the concrete present':'grounding yourself in reliable facts and experience')
+                : (aux==='Ne'?'opening up to fresh outside possibilities':'stepping back for the deeper pattern');
+  const loop=`<div class="gx warn"><h4>⚠️ Watch the loop: ${dom} ↔ ${ter}</h4>
+    <p style="margin:0">When you skip your co-pilot <strong>${aux} (${FN[aux].name})</strong>, you can get stuck cycling between your dominant <strong>${dom}</strong> and your tertiary <strong>${ter}</strong> — both pointed <em>${domAtt}</em>. It feels productive and safe, but you stop ${auxKind}, which is exactly what keeps you balanced. <strong>The way out is always to deliberately re-engage ${aux}.</strong></p></div>`;
+  const grip=`<div class="gx grow"><h4>🌪️ Under heavy stress: the grip of ${inf}</h4>
+    <p style="margin:0">When you are exhausted or overwhelmed for a long stretch, your inferior <strong>${inf} (${FN[inf].name})</strong> can take over in its worst form: ${FN[inf].grip}. This is not the real you — it is a signal to rest, return to your dominant ${dom}, and re-engage your co-pilot ${aux}.</p></div>`;
+
+  const grow=growthFor(aux,inf,dom);
+  const r=document.getElementById('result');
+  document.getElementById('test').classList.add('hidden');
+  r.classList.remove('hidden');
+  r.innerHTML=`
+    <h1 style="margin-bottom:2px">Your stack</h1>
+    <div class="typecode">${type}</div>
+    <p class="essence">${ESSENCE[type]}</p>
+    <p><span class="conf ${conf}">${conf} confidence</span> &nbsp;<span class="note">${confTxt}</span></p>
+    ${conf!=='High'?`<p class="note">Runner-up to consider: <strong>${runner}</strong> — ${ESSENCE[runner]}</p>`:''}
+    <h2>Your four-function stack</h2>
+    <div class="stack">${slots}</div>
+    <h2>How your eight functions scored</h2>
+    <div class="card">${bars}<p class="note" style="margin:12px 0 0">Raw preference strength (0–100). Your stack is matched to the closest of the 16 valid orders, not read straight off these bars — that is why a high score doesn’t always sit at the top of your stack.</p></div>
+    <h2>Insightful guidance</h2>
+    ${guide}${loop}${grip}
+    <h2>Three growth practices for you</h2>
+    <div class="card"><ul class="clean">${grow}</ul></div>
+    <h2>How to read this honestly</h2>
+    <div class="card">
+      <p style="margin-top:0">No instrument is perfect — the truest test is recognition. A good fit usually gives a small jolt of "yes, that’s me" for your dominant and "ugh, painfully true" for your inferior.</p>
+      <p style="margin-bottom:0">If <strong>${runner}</strong> actually rings truer, trust that — neighbouring types often differ by a single preference, and self-knowledge beats any score.</p>
+    </div>
+    <div class="bar"><div class="row">
+      <button class="btn" onclick="location.reload()">Retake</button>
+      <button class="btn ghost" onclick="window.print()">Save as PDF</button>
+    </div></div>`;
+  window.scrollTo(0,0);
+}
+
+function growthFor(aux,inf,dom){
+  const auxMove={
+    Te:'Practice closing the loop: pick one open project and define a concrete, measurable next step with a deadline.',
+    Ti:'Slow down and ask "but does this actually hold together?" — write out your reasoning for one decision step by step.',
+    Fe:'Deliberately attend to others: ask one person how they’re really doing and just listen, without fixing.',
+    Fi:'Pause before reacting and ask "does this match what I truly value?" — name the value out loud.',
+    Se:'Get out of your head and into the room: do one fully physical, present-moment activity with no agenda.',
+    Si:'Build one small reliable routine and keep it for two weeks — let stability become a resource, not a cage.',
+    Ne:'Force the options open: before deciding, brainstorm three alternatives you would normally dismiss.',
+    Ni:'Sit with a problem quietly and ask "what is this really about underneath?" before acting.',
+  };
+  const infMove={
+    Te:'Try organizing one small external thing (a list, a budget) — let structure serve your values instead of threatening them.',
+    Ti:'Take one belief apart and ask whether it is actually logically consistent — gently, as an experiment.',
+    Fe:'Risk expressing warmth outwardly — give one genuine compliment and notice the connection it creates.',
+    Fi:'Ask yourself "what do I actually feel and want here?" before optimizing for results.',
+    Se:'Schedule real sensory rest — a walk, good food, movement — instead of escaping into it under stress.',
+    Si:'Honor your body and history: keep a steady sleep and food rhythm, especially when overwhelmed.',
+    Ne:'When fear invents worst-cases, write them down and ask "how likely, really?" to defuse the spiral.',
+    Ni:'When a dark certainty grips you, name it as a feeling, not a fact, and wait 24 hours before believing it.',
+  };
+  return `<li><strong>Feed your co-pilot.</strong> ${auxMove[aux]}</li>
+          <li><strong>Befriend your growth edge.</strong> ${infMove[inf]}</li>
+          <li><strong>Don’t over-trust your gift.</strong> Your dominant ${dom} is powerful but one-sided — once a week, solve something using the <em>opposite</em> approach on purpose.</li>`;
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 </script>
 </body>
 </html>
